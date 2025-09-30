@@ -1,4 +1,3 @@
-import matplotlib.path as mplPath
 import PIL.Image
 from PIL import ImageTk 
 
@@ -18,24 +17,23 @@ class DATABASEK:
     def __init__(self, master):
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
         if not os.path.exists(self.settings_folder): 
-            print(log()+"settings folder not identified, creating settings' parameters...")
+            print(log()+"MESSAGE")
             self.previous_year_var = False
             self.int_val = 40
             self.px_val = 60
-            print(log()+"settings folder not identified, settings' parameters created successfully.") 
-            os.makedirs('Settings')
-            print(log()+"settings folder created, initializing settings' parameters save...") 
+            print(log()+"MESSAGE") 
+            os.makedirs('MESSAGE')
+            print(log()+"MESSAGE") 
             Settings = {
                     "int_val": 40, 
                     "previous_year": bool(self.previous_year_var),
                     "px_val": 60
                 }
-            print(log()+f"data created in int_val: " + str(self.int_val) +"\ndata created in previous_year_var: " + str(self.previous_year_var) + "\ndata created in self.px_val: " + str(self.px_val))
             with open(self.settings_folder + '/' + 'Settings.json', 'w') as outfile:
                 json.dump(Settings, outfile)
-                print(log()+'settings folder created and settings saving successful.')
+                print(log()+'MESSAGE')
         else:
-            print(log()+'settings folder identified, settings loading')
+            print(log()+'MESSAGE')
             with open(self.settings_folder + '/' + 'Settings.json', 'r') as f:
                 data = json.load(f)
             self.int_val = data['int_val']
@@ -195,7 +193,7 @@ class DATABASEK:
                 self.cam_mtd_chk.configure(state = 'enabled')
                 btn_strt_routine() 
         self.img_mtd_chk_var = BooleanVar(value = False)
-        self.img_mtd_chk = ttk.Checkbutton(self.Measure, text = "Image Method", variable = self.img_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_img_chkbtn)
+        self.img_mtd_chk = ttk.Checkbutton(self.Measure, text = "MESSAGE", variable = self.img_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_img_chkbtn)
         self.img_mtd_chk.grid (row = mLs + 1, column = mLs, padx = 25, sticky = 'W') 
         def chk_cam_chkbtn():
             if self.cam_mtd_chk.instate(['selected']):
@@ -205,7 +203,7 @@ class DATABASEK:
                 self.img_mtd_chk.configure (state = 'enabled')
                 btn_strt_routine() 
         self.cam_mtd_chk_var = BooleanVar(value = False)
-        self.cam_mtd_chk = ttk.Checkbutton(self.Measure, text = "Camera Method", variable = self.cam_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_cam_chkbtn)
+        self.cam_mtd_chk = ttk.Checkbutton(self.Measure, text = "MESSAGE2", variable = self.cam_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_cam_chkbtn)
         self.cam_mtd_chk.grid (row = mLs + 2, column = mLs, padx = 25, sticky = 'W') 
         if not self.cam_mtd_chk.instate(['selected']) and not self.img_mtd_chk.instate(['selected']):
                 self.btn_strt.configure (state = 'disabled') 
