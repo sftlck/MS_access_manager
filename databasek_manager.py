@@ -1,6 +1,6 @@
 import PIL.Image
 from PIL import ImageTk 
-
+import pandas as pd
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
@@ -9,12 +9,14 @@ import sys
 import json
 from time import strftime
 
-def log ():
+def log():
     log = strftime("%D - %H:%M:%S | ")
     return str(log)
 
-class DATABASEK:
-    def __init__(self, master):
+class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
+    def __init__(self, master, options):
+        super().__init__(master)  # Initialize the Frame
+        
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
         if not os.path.exists(self.settings_folder): 
             print(log()+"MESSAGE")
@@ -39,7 +41,7 @@ class DATABASEK:
             self.int_val = data['int_val']
             self.previous_year_var = data['previous_year']
             self.px_val = data['px_val'] 
-        global text
+            
         self.master = master
         master.title("WINDOW TITLE")
         self.master.tkraise()
@@ -56,168 +58,234 @@ class DATABASEK:
         self.x_dimension = self.master.winfo_width()
         self.y_dimension = self.master.winfo_height()
         self.master.wm_minsize(600, 300)
+        
         w_style = ttk.Style()
-        w_style.configure ('TFrame', background = 'black')
+        w_style.configure('TFrame', background='black')
         f_style = ttk.Style()
-        f_style.configure('TButton', font = ('calibri', 12), background = 'black', width = 14)
+        f_style.configure('TButton', font=('calibri', 12), background='black', width=14)
         f2_style = ttk.Style()
-        f2_style.configure('TButton2', font = ('calibri', 12), background = 'black', width = 25)
+        f2_style.configure('TButton2', font=('calibri', 12), background='black', width=25)
         s_style = ttk.Style()
-        s_style.configure('TScale', background = 'black', foreground = '#FFFFFF')
+        s_style.configure('TScale', background='black', foreground='#FFFFFF')
         c_style = ttk.Style()
-        c_style.configure('Grey.TCheckbutton', sticky = 'W', background = 'black', foreground = '#FFFFFF', highlightcolor = 'blue') 
+        c_style.configure('Grey.TCheckbutton', sticky='W', background='black', foreground='#FFFFFF', highlightcolor='blue') 
+        
         # create notebook with tabs
-        self.notebook = ttk.Notebook(master, width = master.winfo_screenwidth(), height = master.winfo_screenheight())
+        self.notebook = ttk.Notebook(master, width=master.winfo_screenwidth(), height=master.winfo_screenheight())
         self.notebook.grid(row=0, column=0, columnspan=4) 
+        
         ####Create Measure frame
-        self.Measure = Frame(self.notebook, background = 'black')
+        self.Measure = Frame(self.notebook, background='black')
         self.Measure.grid(row=0, column=0)
         self.Measure.grid_propagate(False) 
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
-        ######background universal image
-        self.background = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
         
+        ######background universal image
+        try:
+            self.background = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
+        except:
+            # Create a black image as fallback
+            self.background = None
+            
         ######background measure set
-        image_black_measure_label = Label(self.Measure, image = self.background, bg = 'black')
-        image_black_measure_label.place(x = 0, y = 0) 
+        image_black_measure_label = Label(self.Measure, image=self.background, bg='black')
+        image_black_measure_label.place(x=0, y=0) 
+        
         ######Measure Frame black column
-        black_image = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
-        black_canvas = Canvas(self.Measure, width = 150, height = 1200, background = 'black', highlightbackground = 'black')
-        black_canvas.create_image (0,0, image = black_image, anchor = 'n')
-        black_canvas.image = black_image
-        black_canvas.place(x = 0, y = 0)
-        black_canvas.grid_propagate (False) 
+        try:
+            black_image = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
+        except:
+            black_image = None
+            
+        black_canvas = Canvas(self.Measure, width=150, height=1200, background='black', highlightbackground='black')
+        if black_image:
+            black_canvas.create_image(0, 0, image=black_image, anchor='n')
+            black_canvas.image = black_image
+        black_canvas.place(x=0, y=0)
+        black_canvas.grid_propagate(False) 
+        
         ####Create Settings frame
-        self.Settings = Frame(self.notebook, background = 'black')
+        self.Settings = Frame(self.notebook, background='black')
         self.Settings.grid(row=0, column=1)
         self.Settings.grid_propagate(False) 
+        
         ######background Settings set
-        image_settings_label = Label(self.Settings, image = self.background, bg = 'black')
-        image_settings_label.place(x = 0, y = 0)
-        list_1 = Label(self.Settings, text = '1', bg = 'black', fg = 'white')
-        list_1.grid (row = 0, column = 0, padx = 5)
+        image_settings_label = Label(self.Settings, image=self.background, bg='black')
+        image_settings_label.place(x=0, y=0)
+        list_1 = Label(self.Settings, text='1', bg='black', fg='white')
+        list_1.grid(row=0, column=0, padx=5)
         
         ######Settings Frame black column
-        black_image = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
-        black_canvas = Canvas(self.Settings, width = 2500, height = 210, background = 'black', highlightbackground = 'black')
-        black_canvas.create_image (0,0, image = black_image, anchor = 'n')
-        black_canvas.image = black_image
-        black_canvas.place(x = 0, y = 0)
-        black_canvas.grid_propagate (False) 
+        black_canvas = Canvas(self.Settings, width=2500, height=210, background='black', highlightbackground='black')
+        if black_image:
+            black_canvas.create_image(0, 0, image=black_image, anchor='n')
+            black_canvas.image = black_image
+        black_canvas.place(x=0, y=0)
+        black_canvas.grid_propagate(False) 
+        
         ####Create Credits frame
-        self.Credits = Frame(self.notebook, background = 'black')
+        self.Credits = Frame(self.notebook, background='black')
         self.Credits.grid(row=0, column=2)
         self.Credits.grid_propagate(False) 
+        
         ######background Credits set
-        image_settings_label = Label(self.Credits, image = self.background, bg = 'black')
-        image_settings_label.place(x = 0, y = 0) 
+        image_settings_label = Label(self.Credits, image=self.background, bg='black')
+        image_settings_label.place(x=0, y=0) 
+        
         ######Credits Frame black column
-        black_image = ImageTk.PhotoImage(PIL.Image.open('preto.png'))
-        black_canvas = Canvas(self.Credits, width = 2500, height = 80, background = 'black', highlightbackground = 'black')
-        black_canvas.create_image (0,0, image = black_image, anchor = 'n')
-        black_canvas.image = black_image
-        black_canvas.place(x = 0, y = 0)
-        black_canvas.grid_propagate (False) 
+        black_canvas = Canvas(self.Credits, width=2500, height=80, background='black', highlightbackground='black')
+        if black_image:
+            black_canvas.create_image(0, 0, image=black_image, anchor='n')
+            black_canvas.image = black_image
+        black_canvas.place(x=0, y=0)
+        black_canvas.grid_propagate(False) 
+        
         self.notebook.add(self.Measure, text="Measure")
         self.notebook.add(self.Settings, text="Settings")
-        self.notebook.add(self.Credits, text = "Credits")
+        self.notebook.add(self.Credits, text="Credits")
 
         global mLs 
         mLs = 0
         cLs = 0
         sLs = 0 
-        self.image_label = Label(self.Measure, background = 'grey')
-        self.image_label.place (x = 60, y = 15)
-        #self.image_label.grid (row = 1, column = 1)
-        self.image_label.grid_propagate(False) 
-        self.btn_strt = ttk.Button(self.Measure, text = 'Start', command = lambda: (self.year_measure(), self.mtd_strt()), style = 'TButton')
-        self.btn_strt.grid (row = mLs, column = 0, sticky = 'W', padx = 15, pady = 7)
-        btn_exit = ttk.Button(self.Measure, text = 'Exit', command = sys.exit, style = 'TButton')
-        btn_exit.grid (row = mLs + 7, column = 0, sticky = 'W', padx = 15, pady = 8) 
-        #Settings Frame
-        lenght_mssg = Label(self.Settings, text = "Threshold for minimum pixels segmment length in true edges detection:", fg = '#FFFFFF')
-        lenght_mssg.configure (background = 'black')
-        lenght_mssg.grid (row = sLs, padx = 15, pady = 15, sticky = 'W')
         
-        px_mssg = Label(self.Settings, text = "Pixel line extent for true edges detected:", fg = '#FFFFFF')
-        px_mssg.configure (background = 'black')
-        px_mssg.grid (row = sLs + 3, padx = 15, pady = 15, sticky = 'W') 
+        self.image_label = Label(self.Measure, background='grey')
+        self.image_label.place(x=60, y=15)
+        self.image_label.grid_propagate(False) 
+        
+        self.btn_strt = ttk.Button(self.Measure, text='Start', command=lambda: (self.year_measure(), self.mtd_strt()), style='TButton')
+        self.btn_strt.grid(row=mLs, column=0, sticky='W', padx=15, pady=7)
+        
+        btn_exit = ttk.Button(self.Measure, text='Exit', command=sys.exit, style='TButton')
+        btn_exit.grid(row=mLs + 7, column=0, sticky='W', padx=15, pady=8) 
+        
+        # Settings Frame
+        lenght_mssg = Label(self.Settings, text="TEXT", fg='#FFFFFF')
+        lenght_mssg.configure(background='black')
+        lenght_mssg.grid(row=sLs, padx=15, pady=15, sticky='W')
+        
+        px_mssg = Label(self.Settings, text="TEXT", fg='#FFFFFF')
+        px_mssg.configure(background='black')
+        px_mssg.grid(row=sLs + 3, padx=15, pady=15, sticky='W') 
+        
         def sld_vle_update(val):
             self.int_val = int(float(val))
             self.sld_vle.configure(text=str(int(self.int_val)) + " pixels")
             
-        self.sld_vle = Label(self.Settings, text = str(self.int_val), background = 'black', fg = '#FFFFFF')
-        self.sld_vle.grid (row = sLs, column = sLs + 2, padx = 15, sticky = 'W')
+        self.sld_vle = Label(self.Settings, text=str(self.int_val), background='black', fg='#FFFFFF')
+        self.sld_vle.grid(row=sLs, column=sLs + 2, padx=15, sticky='W')
         
         self.length = tk.DoubleVar()
-        self.sld = ttk.Scale(self.Settings, from_ = 0, to = 100, variable = self.length, orient = 'horizontal', command = sld_vle_update)
+        self.sld = ttk.Scale(self.Settings, from_=0, to=100, variable=self.length, orient='horizontal', command=sld_vle_update)
         self.sld.set(str(self.int_val))
-        self.sld.grid (row = sLs, column = sLs + 1, padx = 15, sticky = 'W') 
+        self.sld.grid(row=sLs, column=sLs + 1, padx=15, sticky='W') 
+        
         #################################### 
-        #self.px_val = 60
         def sld_px_update(val_px):
             self.px_val = int(float(val_px))
             self.sld_px.configure(text=str(int(self.px_val)) + " pixels")
             
-        self.sld_px = Label(self.Settings, text = str(self.px_val), background = 'black', fg = '#FFFFFF')
-        self.sld_px.grid (row = sLs + 3, column = sLs + 2, padx = 15, sticky = 'W')
+        self.sld_px = Label(self.Settings, text=str(self.px_val), background='black', fg='#FFFFFF')
+        self.sld_px.grid(row=sLs + 3, column=sLs + 2, padx=15, sticky='W')
         
         self.px_length = tk.DoubleVar()
-        self.sld_px1 = ttk.Scale(self.Settings, from_ = 0, to = 100, variable = self.px_length, orient = 'horizontal', command = sld_px_update)
+        self.sld_px1 = ttk.Scale(self.Settings, from_=0, to=100, variable=self.px_length, orient='horizontal', command=sld_px_update)
         self.sld_px1.set(str(self.px_val))
-        self.sld_px1.grid (row = sLs + 3, column = sLs + 1 , padx = 15, sticky = 'W')
-        self.sld_px1.grid_propagate (False) 
+        self.sld_px1.grid(row=sLs + 3, column=sLs + 1, padx=15, sticky='W')
+        self.sld_px1.grid_propagate(False) 
         #################################### 
-        #End of the stuff in Settings Frame
-        #Measure Frame
+        # End of the stuff in Settings Frame
+        # Measure Frame
         
-        self.inpt_box_flnm_text = Label(self.Measure, text = "Instrument ID", fg = 'White')
-        self.inpt_box_flnm_text.grid (row = mLs + 3, column = 0, sticky = 'W', padx = 15)
-        self.inpt_box_flnm_text.configure (bg = 'black') 
+        self.inpt_box_flnm_text = Label(self.Measure, text="TEXT", fg='White')
+        self.inpt_box_flnm_text.grid(row=mLs + 3, column=0, sticky='W', padx=15)
+        self.inpt_box_flnm_text.configure(bg='black') 
+
+        ####################
         self.inpt_box_flnm = ttk.Entry(self.Measure)
-        self.inpt_box_flnm.grid (row = mLs + 4, column = 0, sticky = 'W', padx = 16)
-        self.inpt_box_flnm.configure (background = 'black', width = 20)
-        self.inpt_box_flnm.focus() 
-        self.inpt_box_OS_text = Label(self.Measure, text = "Service Order Number", fg = 'White')
-        self.inpt_box_OS_text.grid (row = mLs + 5, column = 0, sticky = 'W', padx = 15)
-        self.inpt_box_OS_text.configure (background = 'black') 
+        self.inpt_box_flnm.grid(row=mLs + 4, column=0, sticky='W', padx=16)
+        self.inpt_box_flnm.configure(background='black', width=20)
+        self.inpt_box_flnm.focus()
+
+        self.options = options
+        self.entry_var = tk.StringVar()
+
+        self.entry = ttk.Entry(self.Measure, textvariable=self.entry_var)
+        self.entry.grid(row=mLs + 4, column=0, sticky='W', padx=16)  
+        self.entry.configure(width=20)
+        self.entry.bind("<KeyRelease>", self._on_key_release)
+
+        self.listbox = tk.Listbox(self.Measure, height=5)
+        self.listbox.grid(row=mLs + 5, column=0, sticky='W', padx=16)  
+        self.listbox.bind("<<ListboxSelect>>", self._on_listbox_select)        
+        self.listbox.grid_remove()
+
+        #######################
+        self.inpt_box_OS_text = Label(self.Measure, text="TEXT", fg='White')
+        self.inpt_box_OS_text.grid(row=mLs + 6, column=0, sticky='W', padx=15)
+        self.inpt_box_OS_text.configure(background='black') 
+        
         self.inpt_box_OS = ttk.Entry(self.Measure)
-        self.inpt_box_OS.grid (row = mLs + 6, column = 0, sticky = 'W', padx = 15)
-        self.inpt_box_OS.configure (background = 'black', width = 20)
+        self.inpt_box_OS.grid(row=mLs + 7, column=0, sticky='W', padx=15)
+        self.inpt_box_OS.configure(background='black', width=20)
         
         def chk_img_chkbtn():
-            if self.img_mtd_chk.instate(['selected']):
-                self.cam_mtd_chk.configure(state = 'disabled')
-                self.btn_strt.configure (state = 'enabled')
+            if self.img_mtd_chk_var.get():  # Fixed: Use variable get() method
+                self.cam_mtd_chk.configure(state='disabled')
+                self.btn_strt.configure(state='enabled')
             else:
-                self.cam_mtd_chk.configure(state = 'enabled')
+                self.cam_mtd_chk.configure(state='enabled')
                 btn_strt_routine() 
-        self.img_mtd_chk_var = BooleanVar(value = False)
-        self.img_mtd_chk = ttk.Checkbutton(self.Measure, text = "MESSAGE", variable = self.img_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_img_chkbtn)
-        self.img_mtd_chk.grid (row = mLs + 1, column = mLs, padx = 25, sticky = 'W') 
-        def chk_cam_chkbtn():
-            if self.cam_mtd_chk.instate(['selected']):
-                self.img_mtd_chk.configure (state = 'disabled')
-                self.btn_strt.configure (state = 'enabled')
-            else:
-                self.img_mtd_chk.configure (state = 'enabled')
-                btn_strt_routine() 
-        self.cam_mtd_chk_var = BooleanVar(value = False)
-        self.cam_mtd_chk = ttk.Checkbutton(self.Measure, text = "MESSAGE2", variable = self.cam_mtd_chk_var, style = 'Grey.TCheckbutton', command = chk_cam_chkbtn)
-        self.cam_mtd_chk.grid (row = mLs + 2, column = mLs, padx = 25, sticky = 'W') 
-        if not self.cam_mtd_chk.instate(['selected']) and not self.img_mtd_chk.instate(['selected']):
-                self.btn_strt.configure (state = 'disabled') 
-        def btn_strt_routine ():
-            if not self.cam_mtd_chk.instate(['selected']) and not self.img_mtd_chk.instate(['selected']):
-                self.btn_strt.configure (state = 'disabled') 
-        self.canvas_test = tk.Canvas(self.Measure) 
-        self.crd_mssg = Label(self.Credits, text = "DATABASEK, 28-09-2025", fg = 'White', bg = 'black')
-        self.crd_mssg.grid (row = cLs, column = 0, padx = 15, pady = 15, sticky = 'W')
-        self.crd_mssg.configure (bg = 'black')
-        self.crd_mssg2 = Label(self.Credits, text = "CASTRO,2025", fg = 'White', bg = 'black')
-        self.crd_mssg2.grid (row = cLs + 1, column = 0, sticky = 'W', padx = 15)
-        self.crd_mssg2.configure (bg = 'black')
+                
+        self.img_mtd_chk_var = BooleanVar(value=False)
+        self.img_mtd_chk = ttk.Checkbutton(self.Measure, text="MESSAGE", variable=self.img_mtd_chk_var, style='Grey.TCheckbutton', command=chk_img_chkbtn)
+        self.img_mtd_chk.grid(row=mLs + 1, column=mLs, padx=25, sticky='W') 
         
+        def chk_cam_chkbtn():
+            if self.cam_mtd_chk_var.get():  
+                self.img_mtd_chk.configure(state='disabled')
+                self.btn_strt.configure(state='enabled')
+            else:
+                self.img_mtd_chk.configure(state='enabled')
+                btn_strt_routine() 
+                
+        self.cam_mtd_chk_var = BooleanVar(value=False)
+        self.cam_mtd_chk = ttk.Checkbutton(self.Measure, text="MESSAGE2", variable=self.cam_mtd_chk_var, style='Grey.TCheckbutton', command=chk_cam_chkbtn)
+        self.cam_mtd_chk.grid(row=mLs + 2, column=mLs, padx=25, sticky='W') 
+        
+        if not self.cam_mtd_chk_var.get() and not self.img_mtd_chk_var.get():  
+            self.btn_strt.configure(state='disabled') 
+            
+        def btn_strt_routine():
+            if not self.cam_mtd_chk_var.get() and not self.img_mtd_chk_var.get():
+                self.btn_strt.configure(state='disabled') 
+                
+        self.canvas_test = tk.Canvas(self.Measure) 
+        
+        self.crd_mssg = Label(self.Credits, text="DATABASEK, 28-09-2025", fg='White', bg='black')
+        self.crd_mssg.grid(row=cLs, column=0, padx=15, pady=15, sticky='W')
+        self.crd_mssg.configure(bg='black')
+        
+        self.crd_mssg2 = Label(self.Credits, text="CASTRO,2025", fg='White', bg='black')
+        self.crd_mssg2.grid(row=cLs + 1, column=0, sticky='W', padx=15)
+        self.crd_mssg2.configure(bg='black')
+        
+    def _on_listbox_select(self, event):
+        """Handle listbox selection"""
+        if self.listbox.curselection():
+            index = self.listbox.curselection()[0]
+            value = self.listbox.get(index)
+            self.entry_var.set(value)
+            self.listbox.grid_remove()
+        
+    def year_measure(self):
+        """Placeholder method - needs implementation"""
+        print("year_measure called")
+        
+    def mtd_strt(self):
+        """Placeholder method - needs implementation"""
+        print("mtd_strt called")
+
     def save_routine_Db(self):
         print(log()+'save routine initialized') 
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
@@ -231,7 +299,38 @@ class DATABASEK:
             with open(self.settings_folder + '/' + 'Settings.json', 'w') as outfile:
                 json.dump(Settings, outfile)
                 print(log()+'settings saving successful')
-    
+
+    def _on_key_release(self, event):
+        search_text = self.entry_var.get().lower()
+        if search_text:
+            matching_options = [
+                option for option in self.options if option.lower().startswith(search_text)
+            ]
+            self.listbox.delete(0, tk.END)
+            for item in matching_options:
+                self.listbox.insert(tk.END, item)
+            if matching_options:
+                self.listbox.grid()  
+            else:
+                self.listbox.grid_remove() 
+        else:
+            self.listbox.grid_remove()  
+
+
+try:
+    df_file = pd.read_excel(r'PS2.xlsx', index_col='ID')
+    df = pd.DataFrame(df_file)
+    first = df_file["name"]
+    list = first.head(10)
+    list2 = []
+    for i in list:
+        list2.append(str(i))
+    print(list2)
+    countries = list2
+except Exception as e:
+    print(f"Error loading Excel file: {e}")
+    countries = []  # Fallback empty list
+
 open_wdw = Tk()
-software = DATABASEK(open_wdw)
+software = DATABASEK(open_wdw, options=countries)
 open_wdw.mainloop()
