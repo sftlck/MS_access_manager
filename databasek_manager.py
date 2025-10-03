@@ -18,31 +18,16 @@ class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
         super().__init__(master)  # Initialize the Frame
         
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
+        
+        self.int_val = 40
+        self.px_val = 60
         if not os.path.exists(self.settings_folder): 
             print(log()+"MESSAGE")
             self.previous_year_var = False
-            self.int_val = 40
-            self.px_val = 60
             print(log()+"MESSAGE") 
             os.makedirs('MESSAGE')
             print(log()+"MESSAGE") 
-            Settings = {
-                    "int_val": 40, 
-                    "previous_year": bool(self.previous_year_var),
-                    "px_val": 60
-                }
-            with open(self.settings_folder + '/' + 'Settings.json', 'w') as outfile:
-                json.dump(Settings, outfile)
-                print(log()+'MESSAGE')
-        else:
-            print(log()+'MESSAGE')
-            with open(self.settings_folder + '/' + 'Settings.json', 'r') as f:
-                data = json.load(f)
-            self.int_val = data['int_val']
-            self.previous_year_var = data['previous_year']
-            self.px_val = data['px_val'] 
             
-        self.master = master
         master.title("WINDOW TITLE")
         self.master.tkraise()
         self.msre_record = os.path.join(os.getcwd(), "Measurements")
