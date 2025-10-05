@@ -14,7 +14,7 @@ def log():
     return str(log)
 
 class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
-    def __init__(self, master, options):
+    def __init__(self, master, options,options2):
         super().__init__(master)  # Initialize the Frame
         
         self.settings_folder = os.path.join(os.getcwd(), "Settings") 
@@ -186,26 +186,6 @@ class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
         self.inpt_box_flnm_text.grid(row=mLs + 3, column=0, sticky='W', padx=15)
         self.inpt_box_flnm_text.configure(bg='black') 
 
-        ####################
-        self.inpt_box_flnm = ttk.Entry(self.Measure)
-        self.inpt_box_flnm.grid(row=mLs + 4, column=0, sticky='W', padx=16)
-        self.inpt_box_flnm.configure(background='black', width=20)
-        self.inpt_box_flnm.focus()
-
-        self.options = options
-        self.entry_var = tk.StringVar()
-
-        self.entry = ttk.Entry(self.Measure, textvariable=self.entry_var)
-        self.entry.grid(row=mLs + 4, column=0, sticky='W', padx=16)  
-        self.entry.configure(width=20)
-        self.entry.bind("<KeyRelease>", self._on_key_release)
-
-        self.listbox = tk.Listbox(self.Measure, height=5)
-        self.listbox.grid(row=mLs + 5, column=0, sticky='W', padx=16)  
-        self.listbox.bind("<<ListboxSelect>>", self._on_listbox_select)        
-        self.listbox.grid_remove()
-
-        #######################
         self.inpt_box_OS_text = Label(self.Measure, text="TEXT", fg='White')
         self.inpt_box_OS_text.grid(row=mLs + 6, column=0, sticky='W', padx=15)
         self.inpt_box_OS_text.configure(background='black') 
@@ -254,22 +234,59 @@ class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
         self.crd_mssg2 = Label(self.Credits, text="CASTRO,2025", fg='White', bg='black')
         self.crd_mssg2.grid(row=cLs + 1, column=0, sticky='W', padx=15)
         self.crd_mssg2.configure(bg='black')
+
+        ####################
+        self.inpt_box_flnm = ttk.Entry(self.Measure)
+        self.inpt_box_flnm.grid(row=mLs + 4, column=0, sticky='W', padx=16)
+        self.inpt_box_flnm.configure(background='black', width=20)
+        self.inpt_box_flnm.focus()
+
+        self.options = options
+        self.entry_var = tk.StringVar()
+
+        self.entry = ttk.Entry(self.Measure, textvariable=self.entry_var)
+        self.entry.grid(row=mLs + 4, column=0, sticky='W', padx=16)  
+        self.entry.configure(width=20)
+        self.entry.bind("<KeyRelease>", self._on_key_release_name)
+
+        self.listbox = tk.Listbox(self.Measure, height=5)
+        self.listbox.grid(row=mLs + 5, column=0, sticky='W', padx=16)  
+        self.listbox.bind("<<ListboxSelect>>", self._on_listbox_select_name)        
+        self.listbox.grid_remove()
+
+        #######################
         
-    def _on_listbox_select(self, event):
+    def _on_listbox_select_name(self, event):
         """Handle listbox selection"""
         if self.listbox.curselection():
             index = self.listbox.curselection()[0]
             value = self.listbox.get(index)
             self.entry_var.set(value)
             self.listbox.grid_remove()
+    
+    def _on_key_release_name(self, event):
+        search_text = self.entry_var.get().lower()
+        if search_text:
+            matching_options = [
+                option for option in self.options if option.lower().startswith(search_text)
+            ]
+            self.listbox.delete(0, tk.END)
+            for item in matching_options:
+                self.listbox.insert(tk.END, item)
+            if matching_options:
+                self.listbox.grid()  
+            else:
+                self.listbox.grid_remove() 
+        else:
+            self.listbox.grid_remove()  
         
     def year_measure(self):
         """Placeholder method - needs implementation"""
-        print("year_measure called")
+        print("MESSAGE")
         
     def mtd_strt(self):
         """Placeholder method - needs implementation"""
-        print("mtd_strt called")
+        print("MESSAGE")
 
     def save_routine_Db(self):
         print(log()+'save routine initialized') 
@@ -285,37 +302,32 @@ class DATABASEK(tk.Frame):  # Changed to inherit from tk.Frame
                 json.dump(Settings, outfile)
                 print(log()+'settings saving successful')
 
-    def _on_key_release(self, event):
-        search_text = self.entry_var.get().lower()
-        if search_text:
-            matching_options = [
-                option for option in self.options if option.lower().startswith(search_text)
-            ]
-            self.listbox.delete(0, tk.END)
-            for item in matching_options:
-                self.listbox.insert(tk.END, item)
-            if matching_options:
-                self.listbox.grid()  
-            else:
-                self.listbox.grid_remove() 
-        else:
-            self.listbox.grid_remove()  
 
 
 try:
     df_file = pd.read_excel(r'PS2.xlsx', index_col='ID')
     df = pd.DataFrame(df_file)
-    first = df_file["name"]
-    list = first.head(10)
-    list2 = []
-    for i in list:
-        list2.append(str(i))
-    print(list2)
-    countries = list2
+
+    first, year = df_file["name"], df_file["year"]
+
+    df_list_name, df_list_year = first.head(10), year.head(10)
+    list_name, list_year = [],[]
+
+    for i in df_list_name:
+        list_name.append(str(i))
+        print(i)
+
+    for i in df_list_year:
+        list_year.append(str(i))
+        print(i)
+    
+    name = list_name
+    year = list_year
+
 except Exception as e:
     print(f"Error loading Excel file: {e}")
-    countries = []  # Fallback empty list
+    name = []
 
 open_wdw = Tk()
-software = DATABASEK(open_wdw, options=countries)
+software = DATABASEK(open_wdw, options=name,options2=year)
 open_wdw.mainloop()
